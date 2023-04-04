@@ -79,4 +79,4 @@ build/Release
 node_modules
 
 # remove sensible config file
-./inoconfig.json
+inoconfig.json
