@@ -4,6 +4,18 @@ body {
     font-family: "Segoe UI", sans-serif;
 }
 
+.first-container{
+    height: 100vh;
+}
+
+.second-container{
+    height: 100vh;
+}
+
+.hide-results{
+    display: none;
+}
+
 .title {
     font-family: Papyrus, sans-serif;
 }
@@ -104,4 +116,56 @@ input[type="number"] {
     to {
         transform: rotate(1turn);
     }
+}
+
+
+/* RESULT CSV TABLE */
+.csv-table {
+    text-align: left;
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #28293d;
+    color: #eee;
+    font-family: "Segoe UI", sans-serif;
+    border-radius: 20px;
+}
+
+.csv-table th, .csv-table td {
+    overflow: auto;
+    max-width: 50vw;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #3f4054;
+}
+
+.csv-sentiment{
+    max-width: 10vw!important;
+}
+
+
+.csv-table th {
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #3f4054;
+}
+
+.csv-table tbody tr:nth-child(even) {
+    background-color: #3f4054;
+}
+
+.csv-table tbody tr:nth-child(even):hover {
+    background-color: #434457;
+}
+
+.csv-table a {
+    color: #3d7af8;
+    text-decoration: none;
+}
+.csv-table tr td{
+    height: 100%;
+}
+.csv-table tr:hover {
+    cursor: pointer;
+    background-color: #2b2c3f;
+
 }

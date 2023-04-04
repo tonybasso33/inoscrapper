@@ -71,9 +71,9 @@ class InoScrapper {
             //article scrap
             const articleElements = document.querySelectorAll('.article_magazine_content_wraper');
             articleElements.forEach(articleElement => {
-                const title = articleElement.querySelector('.article_magazine_title_link').textContent.trim();
+                const title = articleElement.querySelector('.article_magazine_title_link').textContent.trim().replace(/[\\$'"]/g, "\\$&");
                 const link = articleElement.querySelector('.article_magazine_title_link').getAttribute('href').trim();
-                const content = articleElement.querySelector('.article_magazine_content').textContent.trim();
+                const content = articleElement.querySelector('.article_magazine_content').textContent.trim().replace(/[\\$'"]/g, "\\$&");
 
                 if (!articlesData.includes(link)) {
                     articlesData.push({title, link, content});
