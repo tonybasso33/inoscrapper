@@ -1,14 +1,31 @@
 # InoScrapper
-InoScrapper is a simple web scrapper that scrapes the latest news from a given Inoreader feed and saves it to a file.
+InoScrapper is a tool that allows you to retrieve article links from Inoreader based on criteria such as keywords, dates, websites, etc. It uses Puppeteer and Node.js to access Inoreader's content and extract data of corresponding articles.
+
+## Installation
+Clone this Git repository on your computer using the following command:
+```bash
+git clone https://github.com/tony.basso33/inoscrapper.git
+```
+
+Then, install dependencies using npm:
+```bash
+npm install
+```
+## Configuration
+Before using InoScrapper, you need to configure the Inoreader access settings in the config.json file. Here is an example configuration file:
+```json
+{
+    "url": "https://www.inoreader.com/xxxx/xxxxxxx/xxxxx",
+    "keywords": ["keyword1", "keyword2"],
+    "maxPages": "your-password",
+    "useWeb": "true"
+}
+```
 
 ## Usage
-Remove `inoconfig-sample.json` to `inoconfig.json`, and change these keys in to configure the script:
-- `url` - The url of the feed
-- `keywords` - The keywords to search for in the feed
-- `maxPages` - The maximum number of pages to navigate through
-
-Then run launch the command
+To use InoScrapper, run the following command:
 ```bash
-node app.js
+npm start
 ```
-The script will create a file called `articles.csv` in the same directory as the script with the filtered articles.
+This will launch the app, which will open a web page. 
+You can then specify the search criteria for the article links and retrieve the links of corresponding articles.

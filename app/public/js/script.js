@@ -1,27 +1,23 @@
 window.onload=function() {
+
     PageState.init();
     const form = document.querySelector('#form');
+
     form.addEventListener('submit', event => {
         event.preventDefault();
 
+        // get form data & check if all fields are filled
         const formData = new FormData(form);
         if (formData.get('url') === '' || formData.get('keywords') === '' || formData.get('maxPages') === '') {
             alert('Veuillez remplir tous les champs.');
             return;
         }
         PageState.busy();
-        console.log("Téléchargement du fichier CSV...");
         fetch('/', {
             method: 'POST',
             body: formData
-        }).then(response => {
-            if (response.headers.get('Content-Type').includes('text/csv')) {
-                return response.text();
-            } else {
-                PageState.idle();
-                throw new Error('Le fichier téléchargé n\'est pas un fichier CSV.');
-            }
-        })
+        }).then()
+            //get csv from Response object
             .then(csvText => {
                 // download csv
                 console.log(csvText);
@@ -36,6 +32,8 @@ window.onload=function() {
                 window.URL.revokeObjectURL(url);
                 PageState.idle();
             })
+
+            //when error downloading csv
             .catch(error => {
                 console.error('Erreur lors du téléchargement du fichier CSV:', error);
                 PageState.idle();
@@ -53,7 +51,6 @@ class PageState {
         PageState.idle();
     }
 
-
     static busy() {
         if (!PageState.button.classList.contains('loading')) {
             PageState.button.classList.add('loading');
@@ -66,7 +63,5 @@ class PageState {
             PageState.button.classList.remove('loading');
             this.isBusy = false;
         }
-
     }
-
 }
