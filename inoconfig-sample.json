@@ -1,5 +1,6 @@
 {
   "url": "",
   "maxPages" : 20,
-  "keywords" : []
+  "keywords" : [],
+  "useWebPage" : true
 }

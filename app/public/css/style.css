@@ -1,0 +1,107 @@
+body {
+    background-color: #1b1c27;
+    color: #eee;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.title {
+    font-family: Papyrus, sans-serif;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #28293d;
+    border-radius: 20px;
+}
+
+label {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+
+input[type="url"],
+input[type="text"],
+input[type="number"] {
+    display: block;
+    width: calc(100% - 32px);
+    padding: 1rem;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 1.5rem;
+    background-color: #3f4054;
+    color: #eee;
+}
+
+#submit {
+    overflow: hidden;
+    display: block;
+    width: 100%;
+    background-color: #3d7af8;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 16px 2rem;
+    margin-top: 64px;
+    margin-bottom: 16px;
+    transition: 0.3s;
+}
+
+#submit:hover {
+    cursor: pointer;
+    background-color: #3f74e7;
+    transform: scale(1.01);
+}
+
+#submit:active {
+    cursor: pointer;
+    transform: scale(0.99);
+}
+
+#submit.loading {
+    background-color: #3d7af8;
+    color: transparent;
+    cursor: default;
+}
+
+#submit::before{
+    opacity: 0;
+    transition: 0.2s;
+}
+
+#submit.loading::before {
+    content: "";
+    position: absolute;
+    margin: auto;
+    left: calc(50% - 12px);
+    width: 24px;
+    height: 24px;
+    border-radius: 45%;
+    border: 3px solid rgba(248, 248, 248, 0.94);
+    border-top-color: #3d7af8;
+    animation: spin 1s ease-in-out infinite;
+    box-sizing: border-box;
+    opacity: 1;
+}
+
+
+@keyframes spin {
+    from {
+        transform: rotate(0turn);
+    }
+
+    to {
+        transform: rotate(1turn);
+    }
+}

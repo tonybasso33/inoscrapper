@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>InoScrapper</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/script.js"></script>
+</head>
+<body>
+<h1>InoScrapper</h1>
+<form id="form" method="post">
+    <p class="input-container">
+        <label for="url">Lien Inoreader</label>
+        <input type="url" id="url" name="url" required>
+    </p>
+    <p class="input-container">
+        <label for="keywords">Mots-clés</label>
+        <input type="text" id="keywords" name="keywords">
+    <p class="input-container">
+    <p class="input-container">
+        <label for="maxPages">Nombre maximum de pages</label>
+        <input type="number" id="maxPages" name="maxPages" min="1" max="20" required>
+    </p>
+    <button type="submit" id="submit">Télécharger</button>
+</form>
+</body>
+</html>

@@ -1,46 +1,38 @@
-(async (filename, options) => {
-    const InoScrapper = require("./inoscapper.js");
+const express = require('express');
+const InoScrapper = require("./inoscapper");
+const bodyParser = require("express");
+const app = express();
+const path = require('path');
 
-    //start browser
-    await InoScrapper.initialize();
+app.use(bodyParser.json());
+app.use(express.static(__dirname + '/public'));
 
-    //get all articles on x pages
-    if (InoScrapper.currentPage < InoScrapper.config.maxPages) {
-        for (let i = 0; i < InoScrapper.config.maxPages; i++) {
-            await InoScrapper.fetchPageArticles();
-            await InoScrapper.nextPage();
-        }
-    }
+// form page route
+app.get('/', (req,res) => {
+    res.sendFile(path.join(__dirname+'/web/index.html'));
+});
 
-    //filter articles with keywords
-    InoScrapper.filteredArticles = InoScrapper.articles.filter(article => {
-        return InoScrapper.config.keywords.some(keyword => article.title.toLowerCase().includes(keyword.toLowerCase()));
-    });
-    console.log(`Filtered ${InoScrapper.filteredArticles.length} articles out of ${InoScrapper.articles.length}`);
+// post form route
+app.post('/', async (req, res) => {
+    const { url, keywords, maxPages } = req.body;
 
-    //apply sentiment analysis
-    InoScrapper.filteredArticles.forEach(article => {
-        article.sentiment = InoScrapper.getSentimentArticle(article);
-    });
+    // initialize InoScrapper
+    await InoScrapper.initialize(url, keywords, maxPages);
 
-    //output articles to csv file
-    const fs = require('fs');
-    const dir = './generated';
-    let fileNumber = 0;
-    for (const file of fs.readdirSync(dir)) {
-        const basename = file.split('.')[0]
-        if(basename === 'articles-' + fileNumber) {
-            fileNumber++;
-        }
-    }
+    // scrape articles from Inoreader
+    await InoScrapper.scrape();
 
-    const otc = require('objects-to-csv');
-    const csv = new otc(InoScrapper.filteredArticles);
-    await csv.toDisk(`./generated/articles-${fileNumber}.csv`)
-    console.log("Generated CSV file");
+    // generate CSV
+    await InoScrapper.generateCsv();
+
+    //send csv
+    res.header('Content-Type', 'text/csv');
+    res.download(InoScrapper.lastestGeneratedCsvPath);
+});
 
 
-
-    //stop browser
-    await InoScrapper.stop();
-})();
+// Start server
+const port = 3000;
+app.listen(3000, () => {
+    console.log(`Server started on port ${port}`);
+});

@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer');
+const fs = require("fs");
+const otc = require("objects-to-csv");
 
 class InoScrapper {
 
@@ -8,11 +10,18 @@ class InoScrapper {
     static articles = [];
     static filteredArticles = [];
     static config = null;
+    static lastestGeneratedCsvPath = null;
 
-    static async initialize() {
+    static async initialize(url, keywords, maxPages) {
         console.log("Initializing browser...");
         //get configuration
         InoScrapper.config = require('../inoconfig.json');
+
+        if(InoScrapper.config.useWebpage) {
+            InoScrapper.config.url = url;
+            InoScrapper.config.keywords = keywords;
+            InoScrapper.config.maxPages = maxPages;
+        }
 
         //start browser
         InoScrapper.browser = await puppeteer.launch();
@@ -25,6 +34,33 @@ class InoScrapper {
             for (let i = 0; i < msg.args().length; ++i)
                 console.log(`${i}: ${msg.args()[i]}`);
         });
+    }
+
+    static async scrape() {
+        const InoScrapper = require("./inoscapper.js");
+
+        //get all articles on x pages
+        if (InoScrapper.currentPage < InoScrapper.config.maxPages) {
+            for (let i = 0; i < InoScrapper.config.maxPages; i++) {
+                await InoScrapper.fetchPageArticles();
+                await InoScrapper.nextPage();
+            }
+        }
+
+        //filter articles with keywords
+        InoScrapper.filteredArticles = InoScrapper.articles.filter(article => {
+            return InoScrapper.config.keywords.some(keyword => article.title.toLowerCase().includes(keyword.toLowerCase()));
+        });
+        console.log(`Filtered ${InoScrapper.filteredArticles.length} articles out of ${InoScrapper.articles.length}`);
+
+        //apply sentiment analysis
+        InoScrapper.filteredArticles.forEach(article => {
+            article.sentiment = InoScrapper.getSentimentArticle(article);
+        });
+
+
+        //stop browser
+        await InoScrapper.stop();
     }
 
     // fetch articles from the current inoreader page
@@ -99,6 +135,19 @@ class InoScrapper {
             end = '\n';
         }
         process.stdout.write(`${text} ${number} ${of} ${number2}...${end}`);
+    }
+
+    //output articles to csv file
+    static async generateCsv(){
+        const fs = require('fs');
+        const dir = './generated';
+        const timestamp = new Date().getTime()/1000;
+
+        const otc = require('objects-to-csv');
+        const csv = new otc(InoScrapper.filteredArticles);
+        await csv.toDisk(`${dir}/articles-${timestamp}.csv`);
+        InoScrapper.lastestGeneratedCsvPath = `${dir}/articles-${timestamp}.csv`;
+        console.log("Generated CSV file");
     }
 }
 
