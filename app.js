@@ -1,45 +1,33 @@
-import puppeteer from 'puppeteer';
-import {load} from 'cheerio';
 
-const filter = 'keyword';
+(async () => {
+    const InoScrapper = require("./inoscapper.js");
+    const config = require("./inoconfig-sample.json");
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto(`https://www.inoreader.com/stream/user/1004995301/tag/dddd/view/html?cs=m`);
+    //start browser
+    await InoScrapper.initialize();
 
-const articles = await page.evaluate(() => {
-    document.querySelectorAll('.article_magazine_content_wraper').forEach(articleHtml => {
-        let arr = [];
-        const article = new Article(articleHtml);
-        arr.push(article);
-        if (article.content.indexOf(filter) > -1) {
-            console.log("--------------------");
-            console.log(article.title);
-            console.log(article.link);
-            console.log(article.content);
+    //get all articles on x pages
+    let currentPage = 1;
+    if(currentPage < config.maxPages) {
+        for(let i = 0; i < config.maxPages; i++) {
+            await InoScrapper.fetchPageArticles();
+            await InoScrapper.nextPage();
+            currentPage++;
         }
-        return arr;
+    }
+
+    //filter articles with keywords
+    InoScrapper.articles = InoScrapper.articles.filter(article => {
+        return config.keywords.some(keyword => {
+            return article.title.toLowerCase().includes(keyword.toLowerCase());
+        });
     });
-});
 
-for (let i = 0; i < articles.length; i++) {
-    const article = articles[i];
-    if (article.content.indexOf(filter) > -1) {
-        console.log("--------------------");
-        console.log(article.title);
-        console.log(article.link);
-        console.log(article.content);
-    }
-}
+    //log articles to console
+    InoScrapper.logArticles();
 
-await browser.close();
+    //stop browser
+    await InoScrapper.stop();
+})();
 
 
-class Article {
-    constructor(html) {
-        const $ = load(html);
-        this.title = $('.article_magazine_title').text();
-        this.link = $('.article_magazine_title_link').attr('href');
-        this.content = $('.article_magazine_content').text();
-    }
-}
