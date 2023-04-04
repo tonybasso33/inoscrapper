@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
-const fs = require("fs");
-const otc = require("objects-to-csv");
+const Sentiment = require('sentiment');
+const otc = require('objects-to-csv');
 
 class InoScrapper {
 
@@ -37,8 +37,6 @@ class InoScrapper {
     }
 
     static async scrape() {
-        const InoScrapper = require("./inoscapper.js");
-
         //get all articles on x pages
         if (InoScrapper.currentPage < InoScrapper.config.maxPages) {
             for (let i = 0; i < InoScrapper.config.maxPages; i++) {
@@ -88,7 +86,6 @@ class InoScrapper {
 
     // get the sentiment of the content of an article
     static getSentimentArticle(article) {
-        const Sentiment = require('sentiment');
         const sentiment = new Sentiment();
         const result = sentiment.analyze(article.content);
         let sentimentLevel = SentimentLevel.NEUTRAL;
@@ -139,11 +136,9 @@ class InoScrapper {
 
     //output articles to csv file
     static async generateCsv(){
-        const fs = require('fs');
         const dir = './generated';
         const timestamp = new Date().getTime()/1000;
 
-        const otc = require('objects-to-csv');
         const csv = new otc(InoScrapper.filteredArticles);
         await csv.toDisk(`${dir}/articles-${timestamp}.csv`);
         InoScrapper.lastestGeneratedCsvPath = `${dir}/articles-${timestamp}.csv`;
