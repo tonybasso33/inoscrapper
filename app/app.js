@@ -1,10 +1,9 @@
 const express = require('express');
 const InoScrapper = require("./inoscapper");
-const bodyParser = require("express");
 const app = express();
 const path = require('path');
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 
 // form page route
@@ -17,17 +16,19 @@ app.post('/', async (req, res) => {
     const { url, keywords, maxPages } = req.body;
 
     // initialize InoScrapper
-    await InoScrapper.initialize(url, keywords, maxPages);
+    if(InoScrapper.formIsValid(url, keywords, maxPages)) {
+        await InoScrapper.initialize(url, keywords, maxPages);
 
-    // scrape articles from Inoreader
-    await InoScrapper.scrape();
+        // scrape articles from Inoreader
+        await InoScrapper.scrape();
 
-    // generate CSV
-    await InoScrapper.generateCsv();
+        // generate CSV
+        await InoScrapper.generateCsv();
 
-    //send csv
-    res.header('Content-Type', 'text/csv');
-    res.download(InoScrapper.lastestGeneratedCsvPath);
+        //send csv
+        res.header('Content-Type', 'text/csv');
+        res.download(InoScrapper.lastestGeneratedCsvPath);
+    }
 });
 
 

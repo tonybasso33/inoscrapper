@@ -14,6 +14,14 @@ class InoScrapper {
     static lastestGeneratedCsvPath = null;
 
     static async initialize(url, keywords, maxPages) {
+        if (url === undefined || keywords === undefined || maxPages === undefined){
+            return;
+        }
+
+        if(url.indexOf("inoreader") < 0 ) {
+            return;
+        }
+
         console.log("Initializing browser...");
         //get configuration
         InoScrapper.config = require('../inoconfig.json');
@@ -146,6 +154,16 @@ class InoScrapper {
         await csv.toDisk(`${dir}/articles-${timestamp}.csv`);
         InoScrapper.lastestGeneratedCsvPath = `${dir}/articles-${timestamp}.csv`;
         console.log("Generated CSV file");
+    }
+
+    static formIsValid(url, keywords, maxPages){
+        if(url === undefined || keywords === undefined || maxPages === undefined)
+            return false;
+
+        if(url.indexOf("inoreader") < 0 )
+            return false;
+
+        return true;
     }
 }
 

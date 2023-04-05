@@ -6,16 +6,25 @@ window.onload=function() {
     form.addEventListener('submit', event => {
         event.preventDefault();
 
+        // create data object
+        const data = {
+            url: form.elements.url.value,
+            keywords: form.elements.keywords.value.split(',').map(keyword => keyword.trim()),
+            maxPages: parseInt(form.elements.maxPages.value)
+        };
+
+
         // get form data & check if all fields are filled
-        const formData = new FormData(form);
-        if (formData.get('url') === '' || formData.get('keywords') === '' || formData.get('maxPages') === '') {
+        if (data.url === '' || data.keywords === '' || data.maxPages === '') {
             alert('Veuillez remplir tous les champs.');
             return;
         }
+
         PageState.busy();
         fetch('/', {
             method: 'POST',
-            body: formData
+            body: JSON.stringify(data),
+            headers: {"Content-Type": "application/json"}
         }).then(response => {
             // response is a csv, return text
             if (response.headers.get('Content-Type').includes('text/csv')) {
