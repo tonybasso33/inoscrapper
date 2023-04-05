@@ -18,7 +18,7 @@ class InoScrapper {
         //get configuration
         InoScrapper.config = require('../inoconfig.json');
 
-        if(InoScrapper.config.useWeb === false) {
+        if(InoScrapper.config.useWeb === true) {
             InoScrapper.config.url = url;
             InoScrapper.config.keywords = keywords;
             InoScrapper.config.maxPages = maxPages;
