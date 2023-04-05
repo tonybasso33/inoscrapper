@@ -4,7 +4,7 @@ InoScrapper is a tool that allows you to retrieve article links from Inoreader b
 ## Installation
 Clone this Git repository on your computer using the following command:
 ```bash
-git clone https://github.com/tony.basso33/inoscrapper.git
+git clone https://github.com/tonybasso33/inoscrapper.git
 ```
 
 Then, install dependencies using npm:
