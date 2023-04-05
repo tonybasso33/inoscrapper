@@ -15,11 +15,12 @@ npm install
 Before using InoScrapper, you need to configure the Inoreader access settings in the config.json file. Here is an example configuration file:
 ```json
 {
-    "url": "https://www.inoreader.com/xxxx/xxxxxxx/xxxxx",
-    "keywords": ["keyword1", "keyword2"],
-    "maxPages": "your-password",
-    "useWeb": "true"
+  "url": "https://www.inoreader.com/xxxx/xxxxxxx/xxxxx",
+  "maxPages" : 20,
+  "keywords" : [],
+  "useWeb" : true
 }
+
 ```
 
 ## Usage
