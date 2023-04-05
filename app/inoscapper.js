@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const Sentiment = require('sentiment');
 const otc = require('objects-to-csv');
+const fs = require("fs");
 
 class InoScrapper {
 
@@ -17,7 +18,7 @@ class InoScrapper {
         //get configuration
         InoScrapper.config = require('../inoconfig.json');
 
-        if(InoScrapper.config.useWebpage) {
+        if(!InoScrapper.config.useWebpage) {
             InoScrapper.config.url = url;
             InoScrapper.config.keywords = keywords;
             InoScrapper.config.maxPages = maxPages;
@@ -138,7 +139,9 @@ class InoScrapper {
     static async generateCsv(){
         const dir = './generated';
         const timestamp = new Date().getTime()/1000;
-
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
         const csv = new otc(InoScrapper.filteredArticles);
         await csv.toDisk(`${dir}/articles-${timestamp}.csv`);
         InoScrapper.lastestGeneratedCsvPath = `${dir}/articles-${timestamp}.csv`;
