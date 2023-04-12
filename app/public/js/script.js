@@ -15,12 +15,13 @@ window.onload=function() {
 
 
         // get form data & check if all fields are filled
-        if (data.url === '' || data.keywords === '' || data.maxPages === '') {
+        if (data.url === '' || data.keywords === '' || data.maxPages > 0) {
             alert('Veuillez remplir tous les champs.');
             return;
         }
 
         PageState.busy();
+
         fetch('/', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -60,9 +61,9 @@ window.onload=function() {
 
 function parseCsv(text) {
     const rows = text.trim().split('\n');
-    const headers = rows.shift().split(',');
+    const headers = rows.shift().split(';');
     return rows.map(row => {
-        const cells = row.split(',');
+        const cells = row.split(';');
         return headers.reduce((obj, header, index) => {
             obj[header] = cells[index].trim();
             return obj;
@@ -75,17 +76,17 @@ function displayCsv(csvText) {
     const table = document.querySelector('.csv-table tbody');
     data.forEach(row => {
         const tr = document.createElement('tr');
-        const titleTd = document.createElement('td');
+        const sourceTd = document.createElement('td');
         const contentTd = document.createElement('td');
         const sentimentTd = document.createElement('td');
 
         sentimentTd.classList.add('csv-sentiment');
 
-        titleTd.textContent = row.title;
+        sourceTd.textContent = row.source;
         contentTd.textContent = row.content;
         sentimentTd.textContent = row.sentiment;
 
-        tr.appendChild(titleTd);
+        tr.appendChild(sourceTd);
         tr.appendChild(contentTd);
         tr.appendChild(sentimentTd);
         table.appendChild(tr);

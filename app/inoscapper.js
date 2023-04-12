@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const Sentiment = require('sentiment');
 const otc = require('objects-to-csv');
 const fs = require("fs");
+const {createObjectCsvWriter: createCsvWriter} = require("csv-writer");
 
 class InoScrapper {
 
@@ -56,7 +57,7 @@ class InoScrapper {
 
         //filter articles with keywords
         InoScrapper.filteredArticles = InoScrapper.articles.filter(article => {
-            return InoScrapper.config.keywords.some(keyword => article.title.toLowerCase().includes(keyword.toLowerCase()));
+            return InoScrapper.config.keywords.some(keyword => article.content.toLowerCase().includes(keyword.toLowerCase()));
         });
         console.log(`Filtered ${InoScrapper.filteredArticles.length} articles out of ${InoScrapper.articles.length}`);
 
@@ -80,12 +81,12 @@ class InoScrapper {
             //article scrap
             const articleElements = document.querySelectorAll('.article_magazine_content_wraper');
             articleElements.forEach(articleElement => {
-                const title = articleElement.querySelector('.article_magazine_title_link').textContent.trim().replace(/[\\$'"]/g, "\\$&");
                 const link = articleElement.querySelector('.article_magazine_title_link').getAttribute('href').trim();
+                const source = new URL(link).hostname;
                 const content = articleElement.querySelector('.article_magazine_content').textContent.trim().replace(/[\\$'"]/g, "\\$&");
 
                 if (!articlesData.includes(link)) {
-                    articlesData.push({title, link, content});
+                    articlesData.push({source, link, content});
                 }
             });
 
@@ -100,19 +101,19 @@ class InoScrapper {
         let sentimentLevel = SentimentLevel.NEUTRAL;
 
         //translate score to enum
-        if (result.score >= 4) {
+        if (result.score === 4) {
             sentimentLevel = SentimentLevel.VERY_POSITIVE;
         }
-        if (result.score >= 2) {
+        if (result.score === 2) {
             sentimentLevel = SentimentLevel.POSITIVE;
         }
-        if (result.score >= 0) {
+        if (result.score === 0) {
             sentimentLevel = SentimentLevel.NEUTRAL;
         }
-        if (result.score >= -2) {
+        if (result.score === -2) {
             sentimentLevel = SentimentLevel.NEGATIVE;
         }
-        if (result.score <= -4) {
+        if (result.score === -4) {
             sentimentLevel = SentimentLevel.VERY_NEGATIVE;
         }
 
@@ -145,13 +146,23 @@ class InoScrapper {
 
     //output articles to csv file
     static async generateCsv(){
+
+
         const dir = './generated';
         const timestamp = new Date().getTime()/1000;
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-        const csv = new otc(InoScrapper.filteredArticles);
-        await csv.toDisk(`${dir}/articles-${timestamp}.csv`);
+        const csvWriter = require('csv-writer').createObjectCsvWriter({
+            path: `${dir}/articles-${timestamp}.csv`,
+            header: [
+                {id: 'source', title: 'source'},
+                {id: 'content', title: 'content'},
+                {id: 'sentiment', title: 'sentiment'}
+            ],
+            fieldDelimiter: ';'
+        });
+        await csvWriter.writeRecords(InoScrapper.filteredArticles);
         InoScrapper.lastestGeneratedCsvPath = `${dir}/articles-${timestamp}.csv`;
         console.log("Generated CSV file");
     }
